@@ -30,7 +30,7 @@ public class Main {
             sb = null;
 
             Pattern imgTag = Pattern.compile("<img[^>]+>");
-            Pattern sourceAtr = Pattern.compile("src=\"https[^\"]+\"");
+            Pattern sourceAtr = Pattern.compile("src=\"[^\"]+\"");
             Pattern addrP = Pattern.compile("\"[^\"]+\"");
             Matcher tagMatcher = imgTag.matcher(page);
             String temp;
