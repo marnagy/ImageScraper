@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-    private static HashSet<String> files = new HashSet<String>();
     public static void main(String[] args) {
         if (args.length != 1){
             return;
@@ -47,7 +46,10 @@ public class Main {
                         sb = new StringBuilder(addrM.group());
                         sb.deleteCharAt(0);
                         sb.deleteCharAt(sb.length() - 1);
-                        downloadImg(sb.toString());
+                        Runnable thread = new ImgDownloadThread(sb.toString());
+                        thread.run();
+
+                        //downloadImg(sb.toString());
                         sb = null;
                     }
                 }
@@ -63,11 +65,17 @@ public class Main {
             e.printStackTrace();
         }
     }
-    public static void downloadImg(String addr) throws MalformedURLException {
-        if (files.contains(addr)){
+    public static void downloadImg(String addr){
+        if (Globals.files.contains(addr)){
             return;
         }
-        URL url = new URL(addr);
+        URL url = null;
+        try {
+            url = new URL(addr);
+        } catch (MalformedURLException e) {
+            System.out.println("Error loading img from " + addr);
+            return;
+        }
         String[] temp = addr.split("/");
         String filename = temp[temp.length - 1];
         File directoryPath = new File(".");
@@ -75,7 +83,7 @@ public class Main {
         try (FileOutputStream fos = new FileOutputStream(outFile);
                 InputStream is = url.openStream()) {
             copystream(is, fos);
-            files.add(addr);
+            Globals.files.add(addr);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
